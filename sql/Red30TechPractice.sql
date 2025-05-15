@@ -23,4 +23,26 @@ SELECT
 FROM Inventory, avg_stock
 WHERE "In Stock" < stock;
 
---
+-- Window functions: row_number()
+WITH row_numbers AS (
+    SELECT
+        OrderNum,
+        OrderDate,
+        CustName,
+        ProdCategory,
+        ProdName,
+        "Order Total",
+        row_number() over (PARTITION BY ProdCategory ORDER BY "Order Total" DESC) AS ROW_NUM
+    FROM OnlineRetailSales
+    WHERE CustName = 'Boehm Inc.'
+)
+SELECT
+    OrderNum,
+    OrderDate,
+    CustName,
+    ProdCategory,
+    ProdName,
+    "Order Total"
+FROM row_numbers
+WHERE ROW_NUM IN (1, 2, 3)
+ORDER BY ProdCategory, "Order Total" DESC;
