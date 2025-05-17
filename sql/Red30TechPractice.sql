@@ -25,7 +25,7 @@ SELECT
 FROM Inventory, avg_stock
 WHERE "In Stock" < stock;
 
--- Window functions: row_number()
+-- Window functions: ROW_NUMBER()
 WITH row_numbers AS (
     SELECT
         OrderNum,
@@ -49,7 +49,7 @@ FROM row_numbers
 WHERE ROW_NUM IN (1, 2, 3)
 ORDER BY ProdCategory, "Order Total" DESC;
 
--- Window functions: lag() and lead()
+-- Window functions: LAG() and LEAD()
 WITH OrderByDates AS (
     SELECT OrderDate, SUM(Quantity) AS QuantityByDay
     FROM OnlineRetailSales
@@ -65,3 +65,17 @@ SELECT
     LAG(QuantityByDay, 4) OVER (ORDER BY OrderDate) AS LastDateQuantity4,
     LAG(QuantityByDay, 5) OVER (ORDER BY OrderDate) AS LastDateQuantity5
 FROM OrderByDates;
+
+-- Window functions: RANK() and DENSE_RANK()
+WITH Ranks AS (
+    SELECT
+        strftime('%Y-%m-%d', "Registration Date") AS "Reg Date",
+        "First name",
+        "Last name",
+        State,
+        DENSE_RANK() OVER (PARTITION BY State ORDER BY "Registration Date") AS DenseRank
+    FROM ConventionAttendees
+)
+SELECT *
+FROM Ranks
+WHERE DenseRank IN (1, 2, 3);
